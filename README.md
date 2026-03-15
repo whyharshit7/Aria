@@ -142,22 +142,6 @@ The paper discusses each of these in detail with proposed mitigations.
 
 ---
 
-## Citation
-
-If you find this work useful for your research, please cite:
-
-```bibtex
-@article{aria2025,
-  title   = {{ARIA}: Adaptive Recurrent Integrative Architecture --- 
-             A Unified Predictive Framework for Perception, Memory, and Reasoning},
-  author  = {[Author Names]},
-  journal = {arXiv preprint},
-  year    = {2025}
-}
-```
-
----
-
 ## Related Work
 
 This paper draws on and synthesizes ideas from:
