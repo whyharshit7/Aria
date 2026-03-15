@@ -142,29 +142,6 @@ The paper discusses each of these in detail with proposed mitigations.
 
 ---
 
-## Repository Structure
-
-```
-.
-├── aria_paper.tex        # Full LaTeX source (arXiv-ready)
-├── aria_references.bib   # BibTeX references (~50 citations)
-└── README.md             # This file
-```
-
-### Compiling the Paper
-
-**Overleaf (easiest):** Upload both `.tex` and `.bib` files to a new Overleaf project and hit Recompile.
-
-**Local (requires a LaTeX distribution):**
-```bash
-pdflatex aria_paper.tex
-bibtex aria_paper
-pdflatex aria_paper.tex
-pdflatex aria_paper.tex
-```
-
----
-
 ## Citation
 
 If you find this work useful for your research, please cite:
