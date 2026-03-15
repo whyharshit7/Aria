@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARIA — Adaptive Recurrent Integrative Architecture</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0a0a0f;
+            --bg2: #0f0f18;
+            --bg3: #141420;
+            --surface: #1a1a2e;
+            --surface2: #16213e;
+            --border: rgba(255,255,255,0.06);
+            --text: #e8e8ef;
+            --text-dim: #8888a0;
+            --text-dimmer: #55556a;
+            --accent: #6c63ff;
+            --accent2: #a78bfa;
+            --accent3: #38bdf8;
+            --gradient1: linear-gradient(135deg, #6c63ff 0%, #a78bfa 50%, #38bdf8 100%);
+            --gradient2: linear-gradient(135deg, #6c63ff 0%, #818cf8 100%);
+            --glow: 0 0 60px rgba(108,99,255,0.15);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            background: var(--bg);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            overflow-x: hidden;
+            line-height: 1.7;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            backdrop-filter: blur(20px) saturate(180%);
+            background: rgba(10,10,15,0.7);
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        nav .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav .logo {
+            font-weight: 800;
+            font-size: 1.3rem;
+            background: var(--gradient1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        nav .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        nav .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.3s;
+            letter-spacing: 0.3px;
+        }
+
+        nav .nav-links a:hover {
+            color: var(--accent2);
+        }
+
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 6rem 2rem 4rem;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+
+        .hero-bg .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .hero-bg .orb1 {
+            width: 600px;
+            height: 600px;
+            background: rgba(108,99,255,0.12);
+            top: -20%;
+            right: -10%;
+            animation-delay: 0s;
+        }
+
+        .hero-bg .orb2 {
+            width: 500px;
+            height: 500px;
+            background: rgba(56,189,248,0.08);
+            bottom: -20%;
+            left: -10%;
+            animation-delay: -7s;
+        }
+
+        .hero-bg .orb3 {
+            width: 300px;
+            height: 300px;
+            background: rgba(167,139,250,0.1);
+            top: 40%;
+            left: 40%;
+            animation-delay: -14s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -50px) scale(1.05); }
+            50% { transform: translate(-20px, 20px) scale(0.95); }
+            75% { transform: translate(40px, 30px) scale(1.02); }
+        }
+
+        .hero-grid {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(108,99,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(108,99,255,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            max-width: 900px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            background: rgba(108,99,255,0.1);
+            border: 1px solid rgba(108,99,255,0.2);
+            border-radius: 100px;
+            font-size: 0.8rem;
+            color: var(--accent2);
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .hero-badge .dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 7vw, 5.5rem);
+            font-weight: 900;
+            line-height: 1.05;
+            letter-spacing: -2px;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #fff 0%, #c4c0ff 50%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero .subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.35rem);
+            color: var(--text-dim);
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.3px;
+        }
+
+        .hero .author {
+            font-size: 0.95rem;
+            color: var(--text-dimmer);
+            margin-bottom: 2.5rem;
+            font-weight: 400;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--gradient2);
+            color: white;
+            box-shadow: 0 4px 20px rgba(108,99,255,0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(108,99,255,0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent2);
+            background: rgba(108,99,255,0.05);
+        }
+
+        /* Sections */
+        section {
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .section-label::before {
+            content: '';
+            width: 20px;
+            height: 1px;
+            background: var(--accent);
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1.15;
+            margin-bottom: 1rem;
+        }
+
+        .section-desc {
+            font-size: 1.1rem;
+            color: var(--text-dim);
+            max-width: 700px;
+            line-height: 1.8;
+        }
+
+        /* Divider */
+        .divider {
+            max-width: 1200px;
+            margin: 0 auto;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* Problem Section */
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .problem-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .problem-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient1);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .problem-card:hover {
+            border-color: rgba(108,99,255,0.2);
+            transform: translateY(-4px);
+            box-shadow: var(--glow);
+        }
+
+        .problem-card:hover::before {
+            opacity: 1;
+        }
+
+        .problem-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .problem-icon.perception {
+            background: rgba(108,99,255,0.12);
+        }
+        .problem-icon.memory {
+            background: rgba(56,189,248,0.12);
+        }
+        .problem-icon.reasoning {
+            background: rgba(167,139,250,0.12);
+        }
+
+        .problem-card h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 0.7rem;
+            letter-spacing: -0.3px;
+        }
+
+        .problem-card p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        /* Axioms */
+        .axioms-container {
+            margin-top: 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .axiom {
+            display: flex;
+            gap: 2rem;
+            padding: 2rem 2.5rem;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            align-items: flex-start;
+            transition: all 0.4s ease;
+        }
+
+        .axiom:hover {
+            border-color: rgba(108,99,255,0.15);
+            background: var(--surface);
+        }
+
+        .axiom-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: var(--gradient1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            flex-shrink: 0;
+            line-height: 1;
+            min-width: 50px;
+        }
+
+        .axiom-content h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.3px;
+        }
+
+        .axiom-content p {
+            color: var(--text-dim);
+            font-size: 0.92rem;
+            line-height: 1.8;
+        }
+
+        /* Architecture Diagram */
+        .arch-section {
+            position: relative;
+        }
+
+        .arch-visual {
+            margin-top: 3rem;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .hierarchy {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .level {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem 2rem;
+            position: relative;
+            transition: all 0.4s ease;
+        }
+
+        .level:hover {
+            border-color: rgba(108,99,255,0.2);
+            box-shadow: var(--glow);
+        }
+
+        .level-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .level-name {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .level-clock {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--accent3);
+            background: rgba(56,189,248,0.1);
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+        }
+
+        .level-desc {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+
+        .level-connector {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2.5rem;
+            height: 40px;
+            color: var(--text-dimmer);
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .connector-arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            font-size: 0.65rem;
+        }
+
+        .connector-arrow .arrow-line {
+            width: 1px;
+            height: 10px;
+            background: var(--accent);
+            opacity: 0.4;
+        }
+
+        .connector-arrow svg {
+            width: 10px;
+            height: 10px;
+            fill: var(--accent);
+            opacity: 0.6;
+        }
+
+        .memory-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .memory-panel-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-dimmer);
+            margin-bottom: 0.5rem;
+        }
+
+        .mem-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.2rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .mem-card:hover {
+            border-color: rgba(108,99,255,0.15);
+        }
+
+        .mem-card h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .mem-card h4 .mem-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .mem-card h4 .ep { background: #f472b6; }
+        .mem-card h4 .wk { background: #fbbf24; }
+        .mem-card h4 .sm { background: #34d399; }
+
+        .mem-card p {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            line-height: 1.6;
+        }
+
+        .consolidation-arrow {
+            text-align: center;
+            color: var(--text-dimmer);
+            font-size: 0.7rem;
+            padding: 0.3rem 0;
+            letter-spacing: 1px;
+        }
+
+        /* PSC Section */
+        .psc-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .psc-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .psc-card:hover {
+            border-color: rgba(108,99,255,0.15);
+        }
+
+        .psc-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .psc-card h3 .fn-icon {
+            font-size: 0.75rem;
+            padding: 0.15rem 0.5rem;
+            background: rgba(108,99,255,0.1);
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent2);
+        }
+
+        .psc-card p {
+            color: var(--text-dim);
+            font-size: 0.88rem;
+            line-height: 1.7;
+        }
+
+        .equation-block {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem 1.5rem;
+            margin-top: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--accent2);
+            overflow-x: auto;
+            line-height: 1.8;
+        }
+
+        /* Math Section */
+        .math-container {
+            margin-top: 3rem;
+        }
+
+        .math-block {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .math-block:hover {
+            border-color: rgba(108,99,255,0.12);
+        }
+
+        .math-block h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            letter-spacing: -0.3px;
+        }
+
+        .math-block p {
+            color: var(--text-dim);
+            font-size: 0.92rem;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .math-eq {
+            background: rgba(108,99,255,0.05);
+            border: 1px solid rgba(108,99,255,0.1);
+            border-radius: 10px;
+            padding: 1.2rem 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent2);
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        /* Timescale Table */
+        .table-container {
+            margin-top: 3rem;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--surface);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        thead th {
+            background: var(--bg2);
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody td {
+            padding: 1rem 1.5rem;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: rgba(108,99,255,0.03);
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent3);
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            margin-top: 3rem;
+            overflow-x: auto;
+        }
+
+        .comparison-table table {
+            min-width: 700px;
+        }
+
+        .comparison-table .check {
+            color: #34d399;
+        }
+
+        .comparison-table .cross {
+            color: #f87171;
+        }
+
+        .comparison-table .partial {
+            color: #fbbf24;
+        }
+
+        .highlight-cell {
+            color: var(--accent2);
+            font-weight: 600;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .feature-card:hover {
+            border-color: rgba(108,99,255,0.15);
+            transform: translateY(-3px);
+        }
+
+        .feature-num {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.8rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.3px;
+        }
+
+        .feature-card p {
+            color: var(--text-dim);
+            font-size: 0.88rem;
+            line-height: 1.7;
+        }
+
+        /* Roadmap */
+        .roadmap {
+            margin-top: 3rem;
+            position: relative;
+        }
+
+        .roadmap::before {
+            content: '';
+            position: absolute;
+            left: 24px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--accent), rgba(108,99,255,0.1));
+        }
+
+        .phase {
+            padding-left: 60px;
+            padding-bottom: 3rem;
+            position: relative;
+        }
+
+        .phase:last-child {
+            padding-bottom: 0;
+        }
+
+        .phase-dot {
+            position: absolute;
+            left: 16px;
+            top: 4px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--bg);
+            border: 3px solid var(--accent);
+            z-index: 1;
+        }
+
+        .phase-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent);
+            margin-bottom: 0.4rem;
+        }
+
+        .phase h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.3px;
+        }
+
+        .phase p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            line-height: 1.8;
+            max-width: 650px;
+        }
+
+        .phase-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .phase-tag {
+            font-size: 0.73rem;
+            padding: 0.3rem 0.8rem;
+            background: rgba(108,99,255,0.08);
+            border: 1px solid rgba(108,99,255,0.15);
+            border-radius: 6px;
+            color: var(--accent2);
+            font-weight: 500;
+        }
+
+        /* Algorithm */
+        .algorithm-block {
+            margin-top: 2rem;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .algorithm-header {
+            padding: 1rem 1.5rem;
+            background: rgba(108,99,255,0.05);
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .algorithm-body {
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            line-height: 2;
+            color: var(--text-dim);
+            overflow-x: auto;
+        }
+
+        .algorithm-body .keyword {
+            color: var(--accent2);
+            font-weight: 500;
+        }
+
+        .algorithm-body .comment {
+            color: var(--text-dimmer);
+            font-style: italic;
+        }
+
+        .algorithm-body .var {
+            color: var(--accent3);
+        }
+
+        /* Probability Section */
+        .prob-grid {
+            display: grid;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .prob-item {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.2rem 1.5rem;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .prob-item:hover {
+            border-color: rgba(108,99,255,0.12);
+        }
+
+        .prob-bar-container {
+            flex-shrink: 0;
+            width: 120px;
+        }
+
+        .prob-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: var(--bg);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .prob-bar {
+            height: 100%;
+            border-radius: 3px;
+            background: var(--gradient2);
+            transition: width 1.5s ease;
+        }
+
+        .prob-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--accent2);
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .prob-text {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        footer {
+            padding: 4rem 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
+        }
+
+        footer .footer-logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: var(--gradient1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        footer p {
+            color: var(--text-dimmer);
+            font-size: 0.85rem;
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .problem-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .arch-visual {
+                grid-template-columns: 1fr;
+            }
+
+            .psc-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            nav .nav-links {
+                display: none;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+
+            .axiom {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .hero h1 {
+                letter-spacing: -1px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            section {
+                padding: 4rem 1.2rem;
+            }
+
+            .hero {
+                padding: 6rem 1.2rem 3rem;
+            }
+
+            .level {
+                padding: 1.2rem 1.5rem;
+            }
+        }
+
+        /* Special accent line */
+        .accent-line {
+            width: 60px;
+            height: 3px;
+            background: var(--gradient1);
+            border-radius: 2px;
+            margin-bottom: 2rem;
+        }
+
+        /* Stat row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            background: var(--gradient1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            font-size: 0.78rem;
+            color: var(--text-dimmer);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 700px) {
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-inner">
+            <div class="logo">ARIA</div>
+            <ul class="nav-links">
+                <li><a href="#problem">Problem</a></li>
+                <li><a href="#axioms">Axioms</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#math">Framework</a></li>
+                <li><a href="#comparison">Comparison</a></li>
+                <li><a href="#roadmap">Roadmap</a></li>
+            </ul>
+            <button class="mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('show')">☰</button>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-bg">
+            <div class="orb orb1"></div>
+            <div class="orb orb2"></div>
+            <div class="orb orb3"></div>
+            <div class="hero-grid"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="dot"></span>
+                Theoretical Proposal
+            </div>
+            <h1>ARIA</h1>
+            <p class="subtitle">Adaptive Recurrent Integrative Architecture</p>
+            <p class="author">A Unified Predictive Framework for Perception, Memory, and Reasoning<br>by <strong style="color:var(--text)">Harshit Saxena</strong></p>
+            <div class="hero-actions">
+                <a href="#architecture" class="btn btn-primary">Explore Architecture →</a>
+                <a href="#problem" class="btn btn-outline">Read the Paper</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section style="padding-top:0; padding-bottom:3rem;">
+        <div class="stats-row fade-in">
+            <div class="stat">
+                <div class="stat-value">4</div>
+                <div class="stat-label">Hierarchy Levels</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">~350M</div>
+                <div class="stat-label">Parameters</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">72%</div>
+                <div class="stat-label">Compute Savings</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">3</div>
+                <div class="stat-label">Memory Systems</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Problem -->
+    <section id="problem">
+        <div class="fade-in">
+            <span class="section-label">The Problem</span>
+            <h2 class="section-title">Cognition Is Not Modular</h2>
+            <p class="section-desc">
+                Modern deep learning treats perception, memory, and reasoning as fundamentally separate problems. 
+                The Transformer architecture embodies this fragmentation — and it creates structural limitations that 
+                incremental fixes cannot solve.
+            </p>
+        </div>
+
+        <div class="problem-grid fade-in">
+            <div class="problem-card">
+                <div class="problem-icon perception">👁</div>
+                <h3>Perception as Encoding</h3>
+                <p>Encoders map raw input to distributed representations, but have no mechanism to use expectations or predictions to shape what is perceived. Perception is passive, not active.</p>
+            </div>
+            <div class="problem-card">
+                <div class="problem-icon memory">🧠</div>
+                <h3>Memory as a Window</h3>
+                <p>A fixed-length context window imposes a hard boundary on temporal integration. There's no persistent, mutable memory — no way to learn from interaction without full retraining.</p>
+            </div>
+            <div class="problem-card">
+                <div class="problem-icon reasoning">⚡</div>
+                <h3>Reasoning as a Side-Effect</h3>
+                <p>Reasoning emerges implicitly through successive attention layers or is explicitly elicited through chain-of-thought prompting. Depth of reasoning is fixed regardless of problem difficulty.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Biological Precedent -->
+    <section>
+        <div class="fade-in">
+            <span class="section-label">Biological Precedent</span>
+            <h2 class="section-title">The Brain Unifies Everything</h2>
+            <p class="section-desc">
+                The mammalian neocortex doesn't implement perception, memory, and reasoning as separate subsystems. 
+                It implements a <em>hierarchical predictive coding scheme</em> where all three emerge from the same underlying process.
+            </p>
+        </div>
+
+        <div class="features-grid fade-in" style="margin-top:2.5rem">
+            <div class="feature-card">
+                <div class="feature-num">Top-Down</div>
+                <h3>Predictions Flow Downward</h3>
+                <p>Higher cortical areas generate top-down predictions of expected activity in lower areas, creating an internal model of the world.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-num">Bottom-Up</div>
+                <h3>Errors Flow Upward</h3>
+                <p>Lower areas compute prediction errors — the difference between actual and predicted activity — and propagate only the surprises upward.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-num">Multi-Scale</div>
+                <h3>Multiple Timescales</h3>
+                <p>The cortex operates over multiple timescales simultaneously, with intrinsic neural time constants varying systematically across the cortical hierarchy.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-num">Memory</div>
+                <h3>Complementary Systems</h3>
+                <p>Memory is embedded in synaptic weights (semantic), hippocampal traces (episodic), and sustained prefrontal activity (working memory).</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Axioms -->
+    <section id="axioms">
+        <div class="fade-in">
+            <span class="section-label">Core Principles</span>
+            <h2 class="section-title">Three Axioms</h2>
+            <p class="section-desc">ARIA is built on three foundational design principles inspired by how biological cognition actually works.</p>
+        </div>
+
+        <div class="axioms-container fade-in">
+            <div class="axiom">
+                <div class="axiom-number">01</div>
+                <div class="axiom-content">
+                    <h3>Prediction Is the Universal Currency</h3>
+                    <p>The system actively predicts its inputs at every level of a processing hierarchy, and only the prediction errors — the surprises — drive further computation. This implements the free energy minimization principle as an architectural prior.</p>
+                </div>
+            </div>
+            <div class="axiom">
+                <div class="axiom-number">02</div>
+                <div class="axiom-content">
+                    <h3>Memory Is a State, Not a Database</h3>
+                    <p>Memory is integral to the system's computational state, manifesting in three complementary forms: fast episodic traces, capacity-limited working memory registers, and slow parametric (semantic) knowledge — with a consolidation process that migrates information between them.</p>
+                </div>
+            </div>
+            <div class="axiom">
+                <div class="axiom-number">03</div>
+                <div class="axiom-content">
+                    <h3>Reasoning Is Variable-Depth Recursion</h3>
+                    <p>The depth of computation is adaptive, not fixed. Simple inputs that are well-predicted require minimal processing; complex or novel inputs require deep processing. Reasoning is what happens when the recurrent loop runs without external input.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Architecture -->
+    <section id="architecture" class="arch-section">
+        <div class="fade-in">
+            <span class="section-label">Architecture</span>
+            <h2 class="section-title">Hierarchical Predictive System</h2>
+            <p class="section-desc">ARIA consists of a predictive hierarchy, a tripartite memory substrate, and an adaptive computation controller.</p>
+        </div>
+
+        <div class="arch-visual fade-in">
+            <div class="hierarchy">
+                <div class="level" style="border-left: 3px solid #a78bfa;">
+                    <div class="level-header">
+                        <span class="level-name">Level 3 — Goals & Schemas</span>
+                        <span class="level-clock">τ = 64 steps</span>
+                    </div>
+                    <div class="level-desc">World models, long-term goals, abstract schemas. Receptive field: ~128–4096 steps.</div>
+                </div>
+
+                <div class="level-connector">
+                    <div class="connector-arrow">
+                        <span style="color:var(--accent2)">↓ pred</span>
+                    </div>
+                    <div class="connector-arrow">
+                        <span style="color:var(--accent3)">↑ err</span>
+                    </div>
+                </div>
+
+                <div class="level" style="border-left: 3px solid #818cf8;">
+                    <div class="level-header">
+                        <span class="level-name">Level 2 — Events & Narratives</span>
+                        <span class="level-clock">τ = 8 steps</span>
+                    </div>
+                    <div class="level-desc">Events, relationships, paragraph-level structure. Receptive field: ~16–64 steps.</div>
+                </div>
+
+                <div class="level-connector">
+                    <div class="connector-arrow">
+                        <span style="color:var(--accent2)">↓ pred</span>
+                    </div>
+                    <div class="connector-arrow">
+                        <span style="color:var(--accent3)">↑ err</span>
+                    </div>
+                </div>
+
+                <div class="level" style="border-left: 3px solid #6c63ff;">
+                    <div class="level-header">
+                        <span class="level-name">Level 1 — Objects & Concepts</span>
+                        <span class="level-clock">τ = 2 steps</span>
+                    </div>
+                    <div class="level-desc">Phrases, local patterns, conceptual entities. Receptive field: ~2–4 steps.</div>
+                </div>
+
+                <div class="level-connector">
+                    <div class="connector-arrow">
+                        <span style="color:var(--accent2)">↓ pred</span>
+                    </div>
+                    <div class="connector-arrow">
+                        <span style="color:var(--accent3)">↑ err</span>
+                    </div>
+                </div>
+
+                <div class="level" style="border-left: 3px solid #38bdf8;">
+                    <div class="level-header">
+                        <span class="level-name">Level 0 — Tokens & Frames</span>
+                        <span class="level-clock">τ = 1 step</span>
+                    </div>
+                    <div class="level-desc">Individual tokens, pixels, audio frames. Receptive field: 1 step.</div>
+                </div>
+
+                <div class="level-connector">
+                    <div class="connector-arrow">
+                        <span style="color:var(--text-dimmer)">↑ raw input</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="memory-panel">
+                <div class="memory-panel-title">Memory Substrate</div>
+                <div class="mem-card">
+                    <h4><span class="mem-dot ep"></span> Episodic Memory</h4>
+                    <p>Fast one-shot storage with importance-weighted forgetting. 65,536 entries with key-value retrieval. Inspired by modern Hopfield networks.</p>
+                </div>
+                <div class="consolidation-arrow">↓ consolidation ↓</div>
+                <div class="mem-card">
+                    <h4><span class="mem-dot wk"></span> Working Memory</h4>
+                    <p>7 register slots with gated writes. Only higher levels (≥2) can write, reflecting top-down executive control. Capacity informed by Miller's 7±2.</p>
+                </div>
+                <div class="consolidation-arrow">↓ consolidation ↓</div>
+                <div class="mem-card">
+                    <h4><span class="mem-dot sm"></span> Semantic Memory</h4>
+                    <p>The network weights themselves — the slowest-changing store. Updated continuously through consolidation for lifelong learning.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- PSC Detail -->
+    <section>
+        <div class="fade-in">
+            <span class="section-label">Core Component</span>
+            <h2 class="section-title">Predictive State Column</h2>
+            <p class="section-desc">The fundamental computational unit of ARIA, inspired by the cortical column. Each PSC integrates bottom-up errors, top-down predictions, memory, and working memory through precision-weighted gating.</p>
+        </div>
+
+        <div class="psc-grid fade-in">
+            <div class="psc-card">
+                <h3><span class="fn-icon">f<sub>l</sub></span> State Transition</h3>
+                <p>A gated recurrent block that integrates all information sources: current state, prediction errors, top-down predictions, memory contents, and working memory.</p>
+                <div class="equation-block">
+                    f(·) = (1 − z) ⊙ s(t) + z ⊙ s̃ − s(t)<br>
+                    <span style="color:var(--text-dimmer)">// GRU-like gating with multi-source input</span>
+                </div>
+            </div>
+            <div class="psc-card">
+                <h3><span class="fn-icon">g<sub>l</sub></span> Downward Prediction</h3>
+                <p>A two-layer MLP that generates predictions of the expected state at the level below. Prediction errors drive all learning.</p>
+                <div class="equation-block">
+                    g(s) = W_g · ϕ(W_g1 · s + b_g1) + b_g<br>
+                    <span style="color:var(--text-dimmer)">// 2-layer MLP, SiLU activation</span>
+                </div>
+            </div>
+            <div class="psc-card">
+                <h3><span class="fn-icon">π<sub>l</sub></span> Precision Estimator</h3>
+                <p>Outputs non-negative precision weights for each information source — controlling how much to trust bottom-up errors, top-down predictions, and memory.</p>
+                <div class="equation-block">
+                    π(s) = Softplus(W_π · s + b_π) ∈ ℝ³⁺<br>
+                    <span style="color:var(--text-dimmer)">// Three groups: π↑, π↓, πᵐ</span>
+                </div>
+            </div>
+            <div class="psc-card">
+                <h3><span class="fn-icon">q<sub>l</sub></span> Memory Query</h3>
+                <p>Projects the current state into a query vector for episodic memory retrieval, enabling context-dependent recall.</p>
+                <div class="equation-block">
+                    q(s) = W_q · s + b_q<br>
+                    <span style="color:var(--text-dimmer)">// Linear projection to query space</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Mathematical Framework -->
+    <section id="math">
+        <div class="fade-in">
+            <span class="section-label">Mathematical Framework</span>
+            <h2 class="section-title">Grounded in Free Energy</h2>
+            <p class="section-desc">ARIA's training objective and dynamics are derived from variational free energy minimization — providing a principled, unified objective.</p>
+        </div>
+
+        <div class="math-container fade-in">
+            <div class="math-block">
+                <h3>Generative Model</h3>
+                <p>ARIA defines a hierarchical generative model where each level predicts the level below, with learned precision.</p>
+                <div class="math-eq">
+                    p(x, s₀, …, s_{L-1}) = p(x | s₀) · ∏ p(s_{l-1} | s_l) · p(s_{L-1})
+                </div>
+            </div>
+
+            <div class="math-block">
+                <h3>Variational Free Energy</h3>
+                <p>The system minimizes variational free energy — an upper bound on surprise. Under the Laplace approximation, this becomes a precision-weighted sum of prediction errors plus a complexity term.</p>
+                <div class="math-eq">
+                    F ≈ Σ ½ ε_l⊤ Π_l ε_l + ½ Σ log|Π_l⁻¹|
+                </div>
+            </div>
+
+            <div class="math-block">
+                <h3>Training Objective</h3>
+                <p>The total loss combines hierarchical prediction errors, complexity regularization, task-specific loss, and adaptive computation cost.</p>
+                <div class="math-eq">
+                    ℒ = Σ λ_l ‖ε_l‖²_{Π_l} + β · D_KL[q‖p] + γ · ℒ_task + δ · ℒ_compute
+                </div>
+            </div>
+
+            <div class="math-block">
+                <h3>Adaptive Sparsity Theorem</h3>
+                <p>In a well-trained system, predictable inputs are processed cheaply. For natural language with typical predictability values, this yields ~72% savings over uniform processing.</p>
+                <div class="math-eq">
+                    Cost(t) = Σ (1/τ_l) · [c_base + (1 − ρ_l) · c_error]
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Adaptive Computation -->
+    <section>
+        <div class="fade-in">
+            <span class="section-label">Key Mechanism</span>
+            <h2 class="section-title">Adaptive Computation</h2>
+            <p class="section-desc">ARIA allocates computation proportionally to problem difficulty. Simple, well-predicted inputs converge quickly; novel or complex inputs trigger deeper processing.</p>
+        </div>
+
+        <div class="algorithm-block fade-in">
+            <div class="algorithm-header">
+                ⚙️ Algorithm — Adaptive Inference
+            </div>
+            <div class="algorithm-body">
+                <span class="keyword">procedure</span> <span class="var">INFER</span>(input_sequence, max_iterations)<br>
+                &nbsp;&nbsp;Initialize s_l ← s_l⁰ <span class="keyword">for all</span> l<br>
+                &nbsp;&nbsp;<span class="keyword">for each</span> input x(t) <span class="keyword">in</span> input_sequence <span class="keyword">do</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span> iter = 1 <span class="keyword">to</span> max_iterations <span class="keyword">do</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span> l = 0 <span class="keyword">to</span> L−1 <span class="keyword">do</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> t <span class="keyword">mod</span> τ_l = 0 <span class="keyword">then</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;s_l ← PSC_l.step(s_l, ε_{l-1}, pred_{l+1}, memory, W)<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> Δ(t) < δ_converge <span class="keyword">and</span> C(t) > δ_confidence <span class="keyword">then</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span> <span class="comment">// early exit — input is well-predicted</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> output_requested <span class="keyword">then</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;output ← OutputHead(s₀, …, s_{L-1}, W)
+            </div>
+        </div>
+
+        <div style="margin-top:2rem" class="fade-in">
+            <div class="math-block" style="background:rgba(108,99,255,0.03);border-color:rgba(108,99,255,0.12)">
+                <h3>💡 Internal Reasoning Mode</h3>
+                <p>Reasoning is identical to inference except the external input is empty. The recurrent dynamics continue driven by top-down predictions, memory retrievals, and working memory manipulation — <strong style="color:var(--text)">reasoning as extended recurrence</strong>.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Timescale Table -->
+    <section>
+        <div class="fade-in">
+            <span class="section-label">Multi-Scale Processing</span>
+            <h2 class="section-title">Timescale Hierarchy</h2>
+            <p class="section-desc">Clock periods follow a geometric progression, forcing each level to represent information at its characteristic timescale.</p>
+        </div>
+
+        <div class="table-container fade-in">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Level</th>
+                        <th>Clock Period</th>
+                        <th>Receptive Field</th>
+                        <th>Cognitive Scope</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Level 0</strong></td>
+                        <td class="mono">τ = 1</td>
+                        <td>1 step</td>
+                        <td>Individual tokens, pixels, audio frames</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Level 1</strong></td>
+                        <td class="mono">τ = 2</td>
+                        <td>~2–4 steps</td>
+                        <td>Phrases, local patterns</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Level 2</strong></td>
+                        <td class="mono">τ = 8</td>
+                        <td>~16–64 steps</td>
+                        <td>Paragraphs, events</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Level 3</strong></td>
+                        <td class="mono">τ = 64</td>
+                        <td>~128–4096 steps</td>
+                        <td>Documents, goals, world models</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Comparison -->
+    <section id="comparison">
+        <div class="fade-in">
+            <span class="section-label">Comparison</span>
+            <h2 class="section-title">How ARIA Differs</h2>
+            <p class="section-desc">A side-by-side comparison with major architecture families across key dimensions.</p>
+        </div>
+
+        <div class="comparison-table fade-in">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Transformer</th>
+                        <th>Mamba / SSM</th>
+                        <th>ARIA</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Core mechanism</strong></td>
+                        <td>Self-attention</td>
+                        <td>Selective state space</td>
+                        <td class="highlight-cell">Predictive state column</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Memory</strong></td>
+                        <td>Context window</td>
+                        <td>Recurrent state</td>
+                        <td class="highlight-cell">Episodic + Working + Semantic</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Temporal processing</strong></td>
+                        <td>Position encoding</td>
+                        <td>Continuous dynamics</td>
+                        <td class="highlight-cell">Multi-timescale hierarchy</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Computation / input</strong></td>
+                        <td>Fixed</td>
+                        <td>Fixed</td>
+                        <td class="highlight-cell">Adaptive</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Continual learning</strong></td>
+                        <td><span class="cross">✗</span></td>
+                        <td><span class="cross">✗</span></td>
+                        <td><span class="check">✓</span> Consolidation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Uncertainty estimation</strong></td>
+                        <td><span class="partial">~</span> External</td>
+                        <td><span class="cross">✗</span></td>
+                        <td><span class="check">✓</span> Native (precision)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Reasoning mechanism</strong></td>
+                        <td>Chain-of-thought</td>
+                        <td>Not explicit</td>
+                        <td class="highlight-cell">Adaptive recurrence + WM</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Biological plausibility</strong></td>
+                        <td>Low</td>
+                        <td>Medium</td>
+                        <td class="highlight-cell">High</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Strengths -->
+    <section>
+        <div class="fade-in">
+            <span class="section-label">Advantages</span>
+            <h2 class="section-title">Why This Matters</h2>
+        </div>
+
+        <div class="features-grid fade-in">
+            <div class="feature-card">
+                <div class="feature-num">01</div>
+                <h3>Unified Framework</h3>
+                <p>Perception, memory, and reasoning arise from a single computational principle — avoiding the engineering complexity of modular systems.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-num">02</div>
+                <h3>Adaptive Efficiency</h3>
+                <p>Prediction error propagation provides natural adaptive computation without a separate halting mechanism. Predictable inputs are cheap.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-num">03</div>
+                <h3>Continuous Learning</h3>
+                <p>Architecturally integrated consolidation addresses the inability of current systems to learn from deployment-time interactions.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-num">04</div>
+                <h3>Uncertainty Awareness</h3>
+                <p>Precision weighting provides native uncertainty estimation, potentially reducing hallucination and enabling calibrated confidence.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Roadmap -->
+    <section id="roadmap">
+        <div class="fade-in">
+            <span class="section-label">Implementation</span>
+            <h2 class="section-title">Four-Phase Roadmap</h2>
+            <p class="section-desc">A concrete path from proof of concept to embodied active inference agents.</p>
+        </div>
+
+        <div class="roadmap fade-in">
+            <div class="phase">
+                <div class="phase-dot"></div>
+                <div class="phase-label">Phase 1</div>
+                <h3>Proof of Concept — Language Only</h3>
+                <p>Demonstrate competitive performance on standard language modeling benchmarks with qualitative evidence of adaptive computation and hierarchical prediction. Target ~350M parameters trained on ~100B tokens.</p>
+                <div class="phase-tags">
+                    <span class="phase-tag">Language Modeling</span>
+                    <span class="phase-tag">Ablation Studies</span>
+                    <span class="phase-tag">Adaptive Computation</span>
+                </div>
+            </div>
+            <div class="phase">
+                <div class="phase-dot"></div>
+                <div class="phase-label">Phase 2</div>
+                <h3>Continuous Learning</h3>
+                <p>Demonstrate that ARIA can absorb new knowledge from interaction without catastrophic forgetting. Test fact absorption, error correction, and long-term knowledge accumulation.</p>
+                <div class="phase-tags">
+                    <span class="phase-tag">Fact Absorption</span>
+                    <span class="phase-tag">Error Correction</span>
+                    <span class="phase-tag">Consolidation</span>
+                </div>
+            </div>
+            <div class="phase">
+                <div class="phase-dot"></div>
+                <div class="phase-label">Phase 3</div>
+                <h3>Multimodal Extension</h3>
+                <p>Extend ARIA's predictive coding framework to multimodal processing via cross-modal prediction. Modality-specific encoders at Level 0, shared processing at Levels 1–3.</p>
+                <div class="phase-tags">
+                    <span class="phase-tag">Vision-Language</span>
+                    <span class="phase-tag">Cross-Modal Binding</span>
+                    <span class="phase-tag">VQA</span>
+                </div>
+            </div>
+            <div class="phase">
+                <div class="phase-dot"></div>
+                <div class="phase-label">Phase 4</div>
+                <h3>Embodiment & Active Inference</h3>
+                <p>Extend to an embodied agent learning through active inference. The optimal action minimizes expected future free energy, enabling exploration, instruction following, and cross-environment transfer.</p>
+                <div class="phase-tags">
+                    <span class="phase-tag">Active Inference</span>
+                    <span class="phase-tag">Embodied Agents</span>
+                    <span class="phase-tag">Exploration</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Honesty Section -->
+    <section>
+        <div class="fade-in">
+            <span class="section-label">Honest Assessment</span>
+            <h2 class="section-title">Probability of Success</h2>
+            <p class="section-desc">We believe in intellectual honesty. Here are our subjective probability estimates for key claims.</p>
+        </div>
+
+        <div class="prob-grid fade-in">
+            <div class="prob-item">
+                <div class="prob-bar-container">
+                    <div class="prob-bar-bg"><div class="prob-bar" data-width="65" style="width:0%"></div></div>
+                    <div class="prob-value">60–70%</div>
+                </div>
+                <div class="prob-text">Core principles broadly correct for general intelligence</div>
+            </div>
+            <div class="prob-item">
+                <div class="prob-bar-container">
+                    <div class="prob-bar-bg"><div class="prob-bar" data-width="45" style="width:0%"></div></div>
+                    <div class="prob-value">40–50%</div>
+                </div>
+                <div class="prob-text">Ideas partially absorbed into Transformer-based systems</div>
+            </div>
+            <div class="prob-item">
+                <div class="prob-bar-container">
+                    <div class="prob-bar-bg"><div class="prob-bar" data-width="55" style="width:0%"></div></div>
+                    <div class="prob-value">50–60%</div>
+                </div>
+                <div class="prob-text">Training stability solvable with known techniques</div>
+            </div>
+            <div class="prob-item">
+                <div class="prob-bar-container">
+                    <div class="prob-bar-bg"><div class="prob-bar" data-width="25" style="width:0%"></div></div>
+                    <div class="prob-value">20–30%</div>
+                </div>
+                <div class="prob-text">Pure prediction error minimization is sufficient</div>
+            </div>
+            <div class="prob-item">
+                <div class="prob-bar-container">
+                    <div class="prob-bar-bg"><div class="prob-bar" data-width="12" style="width:0%"></div></div>
+                    <div class="prob-value">10–15%</div>
+                </div>
+                <div class="prob-text">Outperforms Transformers on standard benchmarks within 5 years</div>
+            </div>
+            <div class="prob-item">
+                <div class="prob-bar-container">
+                    <div class="prob-bar-bg"><div class="prob-bar" data-width="7" style="width:0%"></div></div>
+                    <div class="prob-value">5–10%</div>
+                </div>
+                <div class="prob-text">This specific architecture is the right instantiation</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Conclusion -->
+    <section>
+        <div class="fade-in" style="text-align:center;max-width:800px;margin:0 auto;">
+            <div class="accent-line" style="margin:0 auto 2rem"></div>
+            <h2 class="section-title" style="font-size:clamp(1.8rem,4vw,2.5rem);">
+                The question is not whether prediction, memory, and reasoning <em>should</em> be unified — the brain demonstrates that they <em>can</em> be.
+            </h2>
+            <p class="section-desc" style="margin:1.5rem auto 0;text-align:center;">
+                The question is whether we can build artificial systems that realize this unification efficiently and at scale. ARIA is our attempt to sketch what such a system might look like.
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-logo">ARIA</div>
+        <p>Adaptive Recurrent Integrative Architecture — A unified predictive framework for perception, memory, and reasoning. By Harshit Saxena.</p>
+    </footer>
+
+    <script>
+        // Intersection Observer for fade-in animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    // Animate probability bars
+                    const bars = entry.target.querySelectorAll('.prob-bar');
+                    bars.forEach(bar => {
+                        const width = bar.getAttribute('data-width');
+                        setTimeout(() => {
+                            bar.style.width = width + '%';
+                        }, 300);
+                    });
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Nav scroll effect
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            const currentScroll = window.pageYOffset;
+            if (currentScroll > 100) {
+                nav.style.padding = '0.6rem 2rem';
+            } else {
+                nav.style.padding = '1rem 2rem';
+            }
+            lastScroll = currentScroll;
+        });
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
